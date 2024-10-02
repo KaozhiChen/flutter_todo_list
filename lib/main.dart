@@ -104,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: TextField(
                     controller: _inputController,
                     decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
                       labelText: 'Please enter a task',
                     ),
                   ),
@@ -146,9 +147,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       subtitle: Text(
                           ' ${_priorityToString(_taskList[index].priority)} Priority'),
-                      trailing: IconButton(
-                          onPressed: () => _removeTask(index),
-                          icon: const Icon((Icons.remove))),
+                      trailing: Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Center(
+                          child: IconButton(
+                              color: Colors.white,
+                              iconSize: 20,
+                              onPressed: () => _removeTask(index),
+                              padding: const EdgeInsets.all(0),
+                              icon: const Icon((Icons.remove))),
+                        ),
+                      ),
                     ),
                     const Divider(height: 0)
                   ],
