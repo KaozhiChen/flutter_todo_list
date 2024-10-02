@@ -20,11 +20,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// enumeration priority
+enum Priority { high, medium, low }
+
+// Task class
 class Task {
   String name;
   bool isCompleted;
-
-  Task({required this.name, this.isCompleted = false});
+  Priority priority;
+  Task({required this.name, this.isCompleted = false, required this.priority});
 }
 
 class MyHomePage extends StatefulWidget {
@@ -37,11 +41,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _inputController = TextEditingController();
   final List<Task> _taskList = [];
+  Priority _selectedPriority = Priority.low;
 
   void _addTask() {
     setState(() {
       if (_inputController.text.isNotEmpty) {
-        _taskList.add(Task(name: _inputController.text));
+        _taskList.add(
+            Task(name: _inputController.text, priority: _selectedPriority));
         _inputController.clear();
       }
     });
@@ -57,6 +63,18 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _taskList.removeAt(index);
     });
+  }
+
+  // function to switch priority to string
+  String _priorityToString(Priority priority) {
+    switch (priority) {
+      case Priority.high:
+        return 'High';
+      case Priority.medium:
+        return 'Medium';
+      case Priority.low:
+        return 'Low';
+    }
   }
 
   @override
@@ -81,6 +99,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
+                DropdownButton<Priority>(
+                  value: _selectedPriority,
+                  onChanged: (Priority? newValue) {
+                    setState(() {
+                      _selectedPriority = newValue!;
+                    });
+                  },
+                  items: Priority.values.map((Priority priority) {
+                    return DropdownMenuItem<Priority>(
+                      value: priority,
+                      child: Text(_priorityToString(priority)),
+                    );
+                  }).toList(),
+                ),
                 ElevatedButton(onPressed: _addTask, child: const Text('Add'))
               ],
             ),
@@ -100,6 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? TextDecoration.lineThrough
                             : null),
                   ),
+                  subtitle: Text(
+                      ' ${_priorityToString(_taskList[index].priority)} Priority'),
                   trailing: IconButton(
                       onPressed: () => _removeTask(index),
                       icon: const Icon((Icons.remove))),
