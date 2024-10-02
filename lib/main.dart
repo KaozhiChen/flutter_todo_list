@@ -53,6 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _removeTask(int index) {
+    setState(() {
+      _taskList.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? TextDecoration.lineThrough
                             : null),
                   ),
+                  trailing: IconButton(
+                      onPressed: () => _removeTask(index),
+                      icon: const Icon((Icons.remove))),
                 );
               },
             ),
