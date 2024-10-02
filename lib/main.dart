@@ -131,22 +131,27 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ListView.builder(
               itemCount: _taskList.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  leading: Checkbox(
-                      value: _taskList[index].isCompleted,
-                      onChanged: (_) => _toggleTaskState(index)),
-                  title: Text(
-                    _taskList[index].name,
-                    style: TextStyle(
-                        decoration: _taskList[index].isCompleted
-                            ? TextDecoration.lineThrough
-                            : null),
-                  ),
-                  subtitle: Text(
-                      ' ${_priorityToString(_taskList[index].priority)} Priority'),
-                  trailing: IconButton(
-                      onPressed: () => _removeTask(index),
-                      icon: const Icon((Icons.remove))),
+                return Column(
+                  children: [
+                    ListTile(
+                      leading: Checkbox(
+                          value: _taskList[index].isCompleted,
+                          onChanged: (_) => _toggleTaskState(index)),
+                      title: Text(
+                        _taskList[index].name,
+                        style: TextStyle(
+                            decoration: _taskList[index].isCompleted
+                                ? TextDecoration.lineThrough
+                                : null),
+                      ),
+                      subtitle: Text(
+                          ' ${_priorityToString(_taskList[index].priority)} Priority'),
+                      trailing: IconButton(
+                          onPressed: () => _removeTask(index),
+                          icon: const Icon((Icons.remove))),
+                    ),
+                    const Divider(height: 0)
+                  ],
                 );
               },
             ),
