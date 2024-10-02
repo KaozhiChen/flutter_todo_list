@@ -20,6 +20,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class Task {
+  String name;
+  bool isCompleted;
+
+  Task({required this.name, this.isCompleted = false});
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -29,14 +36,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _inputController = TextEditingController();
-  final List<String> _taskList = [];
+  final List<Task> _taskList = [];
 
   void _addTask() {
     setState(() {
       if (_inputController.text.isNotEmpty) {
-        _taskList.add(_inputController.text);
+        _taskList.add(Task(name: _inputController.text));
         _inputController.clear();
       }
+    });
+  }
+
+  void _toggleTaskState(int index) {
+    setState(() {
+      _taskList[index].isCompleted = !_taskList[index].isCompleted;
     });
   }
 
@@ -71,7 +84,16 @@ class _MyHomePageState extends State<MyHomePage> {
               itemCount: _taskList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_taskList[index]),
+                  leading: Checkbox(
+                      value: _taskList[index].isCompleted,
+                      onChanged: (_) => _toggleTaskState(index)),
+                  title: Text(
+                    _taskList[index].name,
+                    style: TextStyle(
+                        decoration: _taskList[index].isCompleted
+                            ? TextDecoration.lineThrough
+                            : null),
+                  ),
                 );
               },
             ),
