@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 }
 
 // enumeration priority
-enum Priority { high, medium, low }
+enum Priority { low, medium, high }
 
 // Task class
 class Task {
@@ -43,22 +43,26 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Task> _taskList = [];
   Priority _selectedPriority = Priority.low;
 
+  // function to add a task
   void _addTask() {
     setState(() {
       if (_inputController.text.isNotEmpty) {
         _taskList.add(
             Task(name: _inputController.text, priority: _selectedPriority));
         _inputController.clear();
+        _sortTasks();
       }
     });
   }
 
+  // function to toggle tasks' state
   void _toggleTaskState(int index) {
     setState(() {
       _taskList[index].isCompleted = !_taskList[index].isCompleted;
     });
   }
 
+  // function to remove a task
   void _removeTask(int index) {
     setState(() {
       _taskList.removeAt(index);
@@ -75,6 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
       case Priority.low:
         return 'Low';
     }
+  }
+
+  // function to sort taskList
+  void _sortTasks() {
+    _taskList.sort((a, b) => b.priority.index.compareTo(a.priority.index));
   }
 
   @override
