@@ -68,14 +68,18 @@ class _MyHomePageState extends State<MyHomePage> {
   void _removeTask(int index) {
     Task removedTask = _taskList[index];
 
+    // triggering animation
     _listKey.currentState?.removeItem(
       index,
       (context, animation) => _buildRemovedTaskItem(removedTask, animation),
       duration: const Duration(milliseconds: 300),
     );
 
-    setState(() {
-      _taskList.removeAt(index);
+    // renew task list after remove animation
+    Future.delayed(const Duration(milliseconds: 300), () {
+      setState(() {
+        _taskList.removeAt(index);
+      });
     });
   }
 
@@ -97,9 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                  color: _getPriorityColor(task.priority),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      color: _getPriorityColor(task.priority)),
                   width: 8,
                   //height: double.infinity,
                 ),
@@ -201,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Container(
                   width: 8,
-                  //height: double.infinity,
+                  height: double.infinity,
                   decoration: BoxDecoration(
                     color: _getPriorityColor(_taskList[index].priority),
                     borderRadius: BorderRadius.circular(6),
