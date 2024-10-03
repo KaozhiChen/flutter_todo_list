@@ -94,10 +94,15 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 12,
-                height: double.infinity,
-                color: _getPriorityColor(task.priority),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Container(
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                  color: _getPriorityColor(task.priority),
+                  width: 8,
+                  //height: double.infinity,
+                ),
               ),
               const SizedBox(width: 8),
               Checkbox(value: task.isCompleted, onChanged: null),
@@ -192,10 +197,16 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 12,
-                height: double.infinity,
-                color: _getPriorityColor(_taskList[index].priority),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Container(
+                  width: 8,
+                  //height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: _getPriorityColor(_taskList[index].priority),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
               ),
               Checkbox(
                   value: _taskList[index].isCompleted,
