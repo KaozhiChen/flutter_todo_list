@@ -41,14 +41,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _inputController = TextEditingController();
   final List<Task> _taskList = [];
+
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
   Priority _selectedPriority = Priority.low;
 
   // function to add a task
   void _addTask() {
     setState(() {
       if (_inputController.text.isNotEmpty) {
-        _taskList.add(
-            Task(name: _inputController.text, priority: _selectedPriority));
+        Task newTask =
+            Task(name: _inputController.text, priority: _selectedPriority);
+        _taskList.add(newTask);
+        _listKey.currentState?.insertItem(_taskList.length - 1);
         _inputController.clear();
         _sortTasks();
       }
@@ -62,11 +67,45 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // function to remove a task
+  // function to remove a task with animation
   void _removeTask(int index) {
+    Task removedTask = _taskList[index];
+
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => _buildRemovedTaskItem(removedTask, animation),
+      duration: const Duration(milliseconds: 300),
+    );
+
     setState(() {
       _taskList.removeAt(index);
     });
+  }
+
+  // remove animation
+  Widget _buildRemovedTaskItem(Task task, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      axis: Axis.vertical,
+      child: ListTile(
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 12,
+              height: double.infinity,
+              color: _getPriorityColor(task.priority),
+            ),
+            const SizedBox(width: 8),
+            Checkbox(value: task.isCompleted, onChanged: null),
+          ],
+        ),
+        title: Text(
+          task.name,
+          style: const TextStyle(decoration: TextDecoration.lineThrough),
+        ),
+      ),
+    );
   }
 
   // function to get priority color
@@ -134,6 +173,52 @@ class _MyHomePageState extends State<MyHomePage> {
     _taskList.sort((a, b) => b.priority.index.compareTo(a.priority.index));
   }
 
+  Widget _buildTaskItem(
+      BuildContext context, int index, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      axis: Axis.vertical,
+      child: ListTile(
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 12,
+              height: double.infinity,
+              color: _getPriorityColor(_taskList[index].priority),
+            ),
+            Checkbox(
+                value: _taskList[index].isCompleted,
+                onChanged: (_) => _toggleTaskState(index)),
+          ],
+        ),
+        title: Text(
+          _taskList[index].name,
+          style: TextStyle(
+              decoration: _taskList[index].isCompleted
+                  ? TextDecoration.lineThrough
+                  : null),
+        ),
+        trailing: Container(
+          width: 26,
+          height: 26,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.red,
+          ),
+          child: Center(
+            child: IconButton(
+                color: Colors.white,
+                iconSize: 20,
+                onPressed: () => _removeDialog(context, index),
+                padding: const EdgeInsets.all(0),
+                icon: const Icon((Icons.remove))),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,53 +261,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
+
+          // AnimatedList to display tasks
           Expanded(
-            child: ListView.builder(
-              itemCount: _taskList.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 12,
-                            height: double.infinity,
-                            color: _getPriorityColor(_taskList[index].priority),
-                          ),
-                          Checkbox(
-                              value: _taskList[index].isCompleted,
-                              onChanged: (_) => _toggleTaskState(index)),
-                        ],
-                      ),
-                      title: Text(
-                        _taskList[index].name,
-                        style: TextStyle(
-                            decoration: _taskList[index].isCompleted
-                                ? TextDecoration.lineThrough
-                                : null),
-                      ),
-                      trailing: Container(
-                        width: 26,
-                        height: 26,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
-                        ),
-                        child: Center(
-                          child: IconButton(
-                              color: Colors.white,
-                              iconSize: 20,
-                              onPressed: () => _removeDialog(context, index),
-                              padding: const EdgeInsets.all(0),
-                              icon: const Icon((Icons.remove))),
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 0)
-                  ],
-                );
+            child: AnimatedList(
+              key: _listKey,
+              initialItemCount: _taskList.length,
+              itemBuilder: (context, index, animation) {
+                return _buildTaskItem(context, index, animation);
               },
             ),
           )
