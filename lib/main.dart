@@ -11,10 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Todo List',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: ThemeData.dark(),
       home: const MyHomePage(),
     );
   }
@@ -87,22 +84,29 @@ class _MyHomePageState extends State<MyHomePage> {
     return SizeTransition(
       sizeFactor: animation,
       axis: Axis.vertical,
-      child: ListTile(
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 12,
-              height: double.infinity,
-              color: _getPriorityColor(task.priority),
-            ),
-            const SizedBox(width: 8),
-            Checkbox(value: task.isCompleted, onChanged: null),
-          ],
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
         ),
-        title: Text(
-          task.name,
-          style: const TextStyle(decoration: TextDecoration.lineThrough),
+        elevation: 4,
+        color: Colors.grey[850],
+        child: ListTile(
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 12,
+                height: double.infinity,
+                color: _getPriorityColor(task.priority),
+              ),
+              const SizedBox(width: 8),
+              Checkbox(value: task.isCompleted, onChanged: null),
+            ],
+          ),
+          title: Text(
+            task.name,
+            style: const TextStyle(decoration: TextDecoration.lineThrough),
+          ),
         ),
       ),
     );
@@ -178,41 +182,48 @@ class _MyHomePageState extends State<MyHomePage> {
     return SizeTransition(
       sizeFactor: animation,
       axis: Axis.vertical,
-      child: ListTile(
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 12,
-              height: double.infinity,
-              color: _getPriorityColor(_taskList[index].priority),
-            ),
-            Checkbox(
-                value: _taskList[index].isCompleted,
-                onChanged: (_) => _toggleTaskState(index)),
-          ],
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
         ),
-        title: Text(
-          _taskList[index].name,
-          style: TextStyle(
-              decoration: _taskList[index].isCompleted
-                  ? TextDecoration.lineThrough
-                  : null),
-        ),
-        trailing: Container(
-          width: 26,
-          height: 26,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.red,
+        elevation: 4,
+        color: Colors.grey[850],
+        child: ListTile(
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 12,
+                height: double.infinity,
+                color: _getPriorityColor(_taskList[index].priority),
+              ),
+              Checkbox(
+                  value: _taskList[index].isCompleted,
+                  onChanged: (_) => _toggleTaskState(index)),
+            ],
           ),
-          child: Center(
-            child: IconButton(
-                color: Colors.white,
-                iconSize: 20,
-                onPressed: () => _removeDialog(context, index),
-                padding: const EdgeInsets.all(0),
-                icon: const Icon((Icons.remove))),
+          title: Text(
+            _taskList[index].name,
+            style: TextStyle(
+                decoration: _taskList[index].isCompleted
+                    ? TextDecoration.lineThrough
+                    : null),
+          ),
+          trailing: Container(
+            width: 26,
+            height: 26,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red,
+            ),
+            child: Center(
+              child: IconButton(
+                  color: Colors.white,
+                  iconSize: 20,
+                  onPressed: () => _removeDialog(context, index),
+                  padding: const EdgeInsets.all(0),
+                  icon: const Icon((Icons.remove))),
+            ),
           ),
         ),
       ),
@@ -222,9 +233,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Todo List'),
+        backgroundColor: Colors.black,
+        title: const Text(
+          'Todo List',
+          style: TextStyle(
+              color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -264,14 +280,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
           // AnimatedList to display tasks
           Expanded(
-            child: AnimatedList(
-              key: _listKey,
-              initialItemCount: _taskList.length,
-              itemBuilder: (context, index, animation) {
-                return _buildTaskItem(context, index, animation);
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: AnimatedList(
+                key: _listKey,
+                initialItemCount: _taskList.length,
+                itemBuilder: (context, index, animation) {
+                  return _buildTaskItem(context, index, animation);
+                },
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
