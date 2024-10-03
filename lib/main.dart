@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // triggering animation
     _listKey.currentState?.removeItem(
       index,
-      (context, animation) => _buildRemovedTaskItem(removedTask, animation),
+      (context, animation) => _removeTaskAnimation(removedTask, animation),
       duration: const Duration(milliseconds: 300),
     );
 
@@ -84,40 +84,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // remove animation
-  Widget _buildRemovedTaskItem(Task task, Animation<double> animation) {
+  Widget _removeTaskAnimation(Task task, Animation<double> animation) {
     return SizeTransition(
       sizeFactor: animation,
       axis: Axis.vertical,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        elevation: 4,
-        color: Colors.grey[850],
-        child: ListTile(
-          leading: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      color: _getPriorityColor(task.priority)),
-                  width: 8,
-                  //height: double.infinity,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Checkbox(value: task.isCompleted, onChanged: null),
-            ],
-          ),
-          title: Text(
-            task.name,
-            style: const TextStyle(decoration: TextDecoration.lineThrough),
-          ),
-        ),
-      ),
+      child: _buildTaskItem(task, isRemoving: true),
+    );
+  }
+
+  // add animation
+  Widget _addTaskAnimation(
+      BuildContext context, int index, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      axis: Axis.vertical,
+      child: _buildTaskItem(_taskList[index], index: index, key: UniqueKey()),
     );
   }
 
@@ -186,61 +167,51 @@ class _MyHomePageState extends State<MyHomePage> {
     _taskList.sort((a, b) => b.priority.index.compareTo(a.priority.index));
   }
 
-  Widget _buildTaskItem(
-      BuildContext context, int index, Animation<double> animation) {
-    return SizeTransition(
-      sizeFactor: animation,
-      axis: Axis.vertical,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        elevation: 4,
-        color: Colors.grey[850],
-        child: ListTile(
-          leading: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
-                  width: 8,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: _getPriorityColor(_taskList[index].priority),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+  // Widget to build task item Layout
+  Widget _buildTaskItem(Task task,
+      {int? index, bool isRemoving = false, Key? key}) {
+    return Card(
+      key: key,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      elevation: 4,
+      color: Colors.grey[850],
+      child: ListTile(
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Container(
+                width: 8,
+                decoration: BoxDecoration(
+                  color: _getPriorityColor(task.priority),
+                  borderRadius: BorderRadius.circular(6),
                 ),
               ),
+            ),
+            const SizedBox(width: 8),
+            if (!isRemoving)
               Checkbox(
-                  value: _taskList[index].isCompleted,
-                  onChanged: (_) => _toggleTaskState(index)),
-            ],
-          ),
-          title: Text(
-            _taskList[index].name,
-            style: TextStyle(
-                decoration: _taskList[index].isCompleted
-                    ? TextDecoration.lineThrough
-                    : null),
-          ),
-          trailing: Container(
-            width: 26,
-            height: 26,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.red,
-            ),
-            child: Center(
-              child: IconButton(
-                  color: Colors.white,
-                  iconSize: 20,
-                  onPressed: () => _removeDialog(context, index),
-                  padding: const EdgeInsets.all(0),
-                  icon: const Icon((Icons.remove))),
-            ),
-          ),
+                value: task.isCompleted,
+                onChanged:
+                    index != null ? (_) => _toggleTaskState(index) : null,
+              ),
+          ],
         ),
+        title: Text(
+          task.name,
+          style: task.isCompleted
+              ? const TextStyle(decoration: TextDecoration.lineThrough)
+              : const TextStyle(),
+        ),
+        trailing: !isRemoving && index != null
+            ? IconButton(
+                icon: const Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: () => _removeDialog(context, index),
+              )
+            : null,
       ),
     );
   }
@@ -301,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 key: _listKey,
                 initialItemCount: _taskList.length,
                 itemBuilder: (context, index, animation) {
-                  return _buildTaskItem(context, index, animation);
+                  return _addTaskAnimation(context, index, animation);
                 },
               ),
             ),
