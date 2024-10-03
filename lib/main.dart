@@ -94,6 +94,41 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _removeDialog(BuildContext context, index) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove Confirmation'),
+          content: const Text(
+            'Are you sure to remove this task?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Remove'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _removeTask(index);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // function to sort taskList
   void _sortTasks() {
     _taskList.sort((a, b) => b.priority.index.compareTo(a.priority.index));
@@ -179,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: IconButton(
                               color: Colors.white,
                               iconSize: 20,
-                              onPressed: () => _removeTask(index),
+                              onPressed: () => _removeDialog(context, index),
                               padding: const EdgeInsets.all(0),
                               icon: const Icon((Icons.remove))),
                         ),
