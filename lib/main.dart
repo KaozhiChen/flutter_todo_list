@@ -69,6 +69,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // function to get priority color
+  Color _getPriorityColor(Priority priority) {
+    switch (priority) {
+      case Priority.high:
+        return Colors.redAccent;
+      case Priority.medium:
+        return Colors.orangeAccent;
+      case Priority.low:
+      default:
+        return Colors.greenAccent;
+    }
+  }
+
   // function to switch priority to string
   String _priorityToString(Priority priority) {
     switch (priority) {
@@ -109,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 DropdownButton<Priority>(
                   value: _selectedPriority,
                   onChanged: (Priority? newValue) {
@@ -135,9 +148,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 return Column(
                   children: [
                     ListTile(
-                      leading: Checkbox(
-                          value: _taskList[index].isCompleted,
-                          onChanged: (_) => _toggleTaskState(index)),
+                      leading: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 12,
+                            height: double.infinity,
+                            color: _getPriorityColor(_taskList[index].priority),
+                          ),
+                          Checkbox(
+                              value: _taskList[index].isCompleted,
+                              onChanged: (_) => _toggleTaskState(index)),
+                        ],
+                      ),
                       title: Text(
                         _taskList[index].name,
                         style: TextStyle(
@@ -145,8 +168,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ? TextDecoration.lineThrough
                                 : null),
                       ),
-                      subtitle: Text(
-                          ' ${_priorityToString(_taskList[index].priority)} Priority'),
                       trailing: Container(
                         width: 26,
                         height: 26,
