@@ -68,19 +68,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void _removeTask(int index) {
     Task removedTask = _taskList[index];
 
+    // renew task list after remove animation
+    setState(() {
+      _taskList.removeAt(index);
+    });
+
     // triggering animation
     _listKey.currentState?.removeItem(
       index,
       (context, animation) => _removeTaskAnimation(removedTask, animation),
       duration: const Duration(milliseconds: 300),
     );
-
-    // renew task list after remove animation
-    Future.delayed(const Duration(milliseconds: 300), () {
-      setState(() {
-        _taskList.removeAt(index);
-      });
-    });
   }
 
   // remove animation
