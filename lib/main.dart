@@ -236,28 +236,60 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   child: TextField(
                     controller: _inputController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Please enter a task',
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white10,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      labelText: 'Enter task',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      prefixIcon: const Icon(Icons.task, color: Colors.white54),
                     ),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
-                const SizedBox(width: 12),
-                DropdownButton<Priority>(
-                  value: _selectedPriority,
-                  onChanged: (Priority? newValue) {
-                    setState(() {
-                      _selectedPriority = newValue!;
-                    });
-                  },
-                  items: Priority.values.map((Priority priority) {
-                    return DropdownMenuItem<Priority>(
-                      value: priority,
-                      child: Text(_priorityToString(priority)),
-                    );
-                  }).toList(),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white10,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: DropdownButton<Priority>(
+                    value: _selectedPriority,
+                    dropdownColor: Colors.black,
+                    underline: Container(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.white),
+                    onChanged: (Priority? newValue) {
+                      setState(() {
+                        _selectedPriority = newValue!;
+                      });
+                    },
+                    items: Priority.values.map((Priority priority) {
+                      return DropdownMenuItem<Priority>(
+                        value: priority,
+                        child: Text(
+                          _priorityToString(priority),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-                ElevatedButton(onPressed: _addTask, child: const Text('Add'))
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _addTask,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
               ],
             ),
           ),
